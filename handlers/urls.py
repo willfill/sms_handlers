@@ -4,5 +4,5 @@ from django.conf.urls import patterns, url
 import views as v
 
 urlpatterns = patterns('',
-    url(r'^$', v.stub, name='stub')
+    url(r'^$', v.index, name='index')
 )
