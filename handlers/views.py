@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from django.http import HttpResponse
+from django.shortcuts import render
 from handlers.gates import registry
 
 
@@ -9,5 +9,5 @@ def get_handler(cls_name):
     return handler()
 
 
-def stub(request):
-    return HttpResponse('OK')
+def index(request):
+    return render(request, 'index.html', {})

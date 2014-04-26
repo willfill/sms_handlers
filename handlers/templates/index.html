@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_js %}{{ block.super }}
+<script type="text/javascript" src={% static "js/handlers.js" %}></script>
+{% endblock body_js %}
+
+{% block content %}
+<p>There is sth</p>
+{% endblock content %}
