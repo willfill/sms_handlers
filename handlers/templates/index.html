@@ -53,6 +53,11 @@
                     </div>
                 </div>
             </form>
+            {% if error %}
+            <div class="error">
+                <p class="bg-danger">{{error}}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

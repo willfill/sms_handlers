@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from django.conf.urls import patterns, url
-import views as v
+import handlers.views as v
 
 urlpatterns = patterns('',
-    url(r'^$', v.index, name='index'),
+    url(r'^$', v.send_page, name='send_page'),
     url(r'^logs/$', v.log, name='log')
 )

@@ -3,7 +3,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 
-from handlers.gates import registry
+from handlers.gateways import registry
 
 
 phone_validator = RegexValidator(

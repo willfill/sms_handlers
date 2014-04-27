@@ -3,31 +3,39 @@
 import requests
 import datetime
 import json
+from abc import ABCMeta, abstractmethod
 
 from django.conf import settings
 
-from models import LogEntry
+from handlers.models import LogEntry
+
 
 registry = {}
 
 
-class RegisteredClass(type):
-    def __new__(cls, *args, **kwargs):
-        newclass = super(RegisteredClass, cls).__new__(cls, *args, **kwargs)
-        registry[newclass.__name__] = newclass
-        return newclass
+def register(cls):
+    registry[cls.__name__] = cls
+    return cls
 
 
 class BaseHandler(object):
+    """Defines sms handler interface"""
+
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
     def _parse_response(self, response):
         raise NotImplemented
 
+    @abstractmethod
     def _build_url(self, *args, **kwargs):
         raise NotImplemented
 
+    @abstractmethod
     def _get_post_data(self, *args, **kwargs):
         raise NotImplemented
 
+    @abstractmethod
     def send(self, *args, **kwargs):
         raise NotImplemented
 
@@ -74,24 +82,39 @@ class CommonHandler(BaseHandler):
         return self._parse_response(resp.content)
 
 
+@register
 class Smsc(CommonHandler):
-    __metaclass__ = RegisteredClass
-
     api_url = 'http://smsc.ru/someapi/message/'
 
 
+@register
 class Smstraffic(CommonHandler):
-    __metaclass__ = RegisteredClass
-
     api_url = 'http://smstraffic.ru/super­api/message/'
 
 
+@register
 class SmscReal(BaseHandler):
-    __metaclass__ = RegisteredClass
+    """Siple handler for real smsc.ru gateway"""
 
     api_url = 'http://smsc.ru/sys/send.php'
     login = settings.SMSC_LOGIN
     password = settings.SMSC_PASSWORD
+
+    def _parse_response(self, data):
+        response = json.loads(data)
+        log_entry = LogEntry(
+            timestamp=datetime.datetime.now(),
+            gatename=self.__class__.__name__,
+            status=LogEntry.ERROR if 'error' in response else LogEntry.OK,
+            phone=response.get('phone', ''),
+            error_code=response.get('error_code', None),
+            error_msg=response.get('error', '')
+        )
+        # не сохраняем log_entry, так как нам нужно добавить иформацию о номере (реальный гейт ее не возвращает)
+        return log_entry
+
+    def _get_post_data(self, data):
+        return {}
 
     def _build_url(self, data):
         qs_dict = dict(
@@ -99,7 +122,7 @@ class SmscReal(BaseHandler):
             psw=self.password,
             phones=data.get('phone', None),
             mes=data.get('message', None),
-            fmt=data.get('fmt', 3),
+            fmt=data.get('fmt', 3),  # гейт будет возвращать ответ в json
         )
 
         qs = ["%s=%s" % (k, v) for k, v in qs_dict.iteritems()]
@@ -124,16 +147,4 @@ class SmscReal(BaseHandler):
         log_entry = self._parse_response(resp.content)
         log_entry.phone = data.get('phone', '')
         log_entry.save()
-        return log_entry
-
-    def _parse_response(self, data):
-        response = json.loads(data)
-        log_entry = LogEntry(
-            timestamp=datetime.datetime.now(),
-            gatename=self.__class__.__name__,
-            status=LogEntry.ERROR if 'error' in response else LogEntry.OK,
-            phone=response.get('phone', ''),
-            error_code=response.get('error_code', None),
-            error_msg=response.get('error', '')
-        )
         return log_entry
