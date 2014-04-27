@@ -7,4 +7,4 @@ assets:
 	./manage.py collectstatic --noinput
 
 clean:
-	find . -type f -name "*.pyc" -o -name *.pyo -o -name '*~' -exec rm -f {} \;
+	find . -type f -name "*.py[co]" -delete
