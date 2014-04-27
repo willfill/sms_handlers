@@ -97,8 +97,6 @@ class SmscReal(BaseHandler):
     """Siple handler for real smsc.ru gateway"""
 
     api_url = 'http://smsc.ru/sys/send.php'
-    login = settings.SMSC_LOGIN
-    password = settings.SMSC_PASSWORD
 
     def _parse_response(self, data):
         response = json.loads(data)
@@ -118,8 +116,8 @@ class SmscReal(BaseHandler):
 
     def _build_url(self, data):
         qs_dict = dict(
-            login=self.login,
-            psw=self.password,
+            login=settings.SMSC_LOGIN,
+            psw=settings.SMSC_PASSWORD,
             phones=data.get('phone', None),
             mes=data.get('message', None),
             fmt=data.get('fmt', 3),  # гейт будет возвращать ответ в json

@@ -91,4 +91,3 @@ except ImportError:
     sys.stderr.write("Can't import 'localsettings.py'\n")
     sys.stderr.write("\nThe exception was: \n\n")
     traceback.print_exc()
-    sys.exit()
