@@ -83,3 +83,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/static/'
+
+try:
+    from localsettings import *
+except ImportError:
+    import sys, traceback
+    sys.stderr.write("Can't import 'localsettings.py'\n")
+    sys.stderr.write("\nThe exception was: \n\n")
+    traceback.print_exc()
+    sys.exit()

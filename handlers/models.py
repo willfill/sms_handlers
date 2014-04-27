@@ -17,3 +17,6 @@ class LogEntry(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     error_code = models.IntegerField(null=True)
     error_msg = models.TextField(null=True)
+
+    class Meta:
+        ordering = ['-timestamp']

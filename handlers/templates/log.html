@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}{{ block.super }}
+<link type="text/css" href="{% static "css/style.css" %}" rel="stylesheet" />
+{% endblock css %}
+
+{% block content %}
+<div class="container main">
+    <div class="row navbar">
+        <div class="col-sm-12">
+            <ul class="nav nav-tabs nav-justified">
+                <li><a href="/">Send message</a></li>
+                <li class="active"><a href="#">Logs</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-wd-12">
+            <table class="table table-condended table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Gateway</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Error code</th>
+                        <th>Error message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{entry.timestamp}}</td>
+                        <td>{{entry.gatename}}</td>
+                        <td>{{entry.phone}}</td>
+                        <td>{{entry.status}}</td>
+                        <td>{{entry.error_code}}</td>
+                        <td>{{entry.error_msg}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
